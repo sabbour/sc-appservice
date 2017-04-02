@@ -5,3 +5,12 @@
 /demos/license-20170313023152.zip
 *.scwdp
 demos/02-scoobarm/Sitecore 8.2.1/license.xml
+demos/license.zip
+demos/02-scoobarm/Sitecore 8.2.1/xm-asp-sitecore.parameters.tmp.json
+content/SitecoreDev.rdp
+Debug/
+Release/
+.vs/
+demos/02-scoobarm/Sitecore 8.2.1/CD.parameters.tmp.xml
+demos/02-scoobarm/Sitecore 8.2.1/CM.parameters.tmp.xml
+Sitecore 8.2 rev. 161221 (WDP XM1 packages).zip
