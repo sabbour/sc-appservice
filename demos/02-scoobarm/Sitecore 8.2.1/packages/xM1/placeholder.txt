@@ -1,1 +1,2 @@
 This folder should contain the Sitecore deployment packages
+Get them from here https://dev.sitecore.net/Downloads/Sitecore_Experience_Platform/82/Sitecore_Experience_Platform_82_Update2.aspx
