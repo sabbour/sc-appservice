@@ -1,0 +1,30 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "BlueGreenWebDeployPackageFolder": {
+      "value": "BlueGreen"
+    },
+    "BlueGreenWebDeployPackageFileName": {
+      "value": "package.zip"
+    },
+    "WhatIsMyEnvironment_AppSetting": {
+      "value": "Staging"
+    },
+    "ApplicationName_AppSetting": {
+      "value": "Blue Green"
+    },
+    "Color_AppSetting": {
+      "value": "Blue"
+    },
+    "Version_AppSetting": {
+      "value": "1.0"
+    },
+    "BlueGreenAppServicePlanName": {
+      "value": "BlueGreenAppServicePlan"
+    },
+    "BlueGreenAppServicePlanSkuName": {
+      "value": "S1"
+    }
+  }
+}

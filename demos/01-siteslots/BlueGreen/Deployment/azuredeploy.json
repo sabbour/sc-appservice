@@ -1,0 +1,202 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "ApplicationName_AppSetting": {
+      "type": "string",
+      "minLength": 1
+    },
+    "BlueGreenAppServicePlanName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "BlueGreenAppServicePlanSkuName": {
+      "type": "string",
+      "defaultValue": "F1",
+      "allowedValues": [
+        "F1",
+        "D1",
+        "B1",
+        "B2",
+        "B3",
+        "S1",
+        "S2",
+        "S3",
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ],
+      "metadata": {
+        "description": "Describes plan's pricing tier and capacity. Check details at https://azure.microsoft.com/en-us/pricing/details/app-service/"
+      }
+    },
+    "_artifactsLocation": {
+      "type": "string"
+    },
+    "_artifactsLocationSasToken": {
+      "type": "securestring"
+    },
+    "StagingWebDeployPackageFolder": {
+      "type": "string",
+      "minLength": 1,
+      "metadata": {
+        "description": "WebDeploy package location. This path is relative to the _artifactsLocation parameter"
+      }
+    },
+    "StagingWebDeployPackageFileName": {
+      "type": "string",
+      "minLength": 1,
+      "metadata": {
+        "description": "Name of the webdeploy package"
+      }
+    }
+  },
+  "variables": {
+    "BlueGreenAppName": "[concat('BlueGreenApp', uniqueString(resourceGroup().id))]"
+  },
+  "resources": [
+    {
+      "name": "[parameters('BlueGreenAppServicePlanName')]",
+      "type": "Microsoft.Web/serverfarms",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2015-08-01",
+      "sku": {
+        "name": "[parameters('BlueGreenAppServicePlanSkuName')]"
+      },
+      "dependsOn": [],
+      "tags": {
+        "displayName": "BlueGreenAppServicePlan"
+      },
+      "properties": {
+        "name": "[parameters('BlueGreenAppServicePlanName')]",
+        "numberOfWorkers": 1
+      }
+    },
+    {
+      "name": "[variables('BlueGreenAppName')]",
+      "type": "Microsoft.Web/sites",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2015-08-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', parameters('BlueGreenAppServicePlanName'))]"
+      ],
+      "tags": {
+        "[concat('hidden-related:', resourceId('Microsoft.Web/serverfarms', parameters('BlueGreenAppServicePlanName')))]": "Resource",
+        "displayName": "BlueGreenApp"
+      },
+      "properties": {
+        "name": "[variables('BlueGreenAppName')]",
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('BlueGreenAppServicePlanName'))]",
+        "siteConfig": {
+          "alwaysOn": true
+        }
+      },
+      "resources": [
+        {
+          "apiVersion": "2015-08-01",
+          "name": "staging",
+          "type": "slots",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/Sites', variables('BlueGreenAppName'))]"
+          ],
+          "properties": {
+            "siteConfig": {
+              "alwaysOn": true
+            }
+          },
+          "resources": [
+            {
+              "name": "appsettings",
+              "type": "config",
+              "apiVersion": "2015-08-01",
+              "dependsOn": [
+                "[resourceId('Microsoft.Web/sites/slots', variables('BlueGreenAppName'), 'staging')]"
+              ],
+              "tags": {
+                "displayName": "StagingApplicationSettings"
+              },
+              "properties": {
+                "WhatIsMyEnvironment": "Staging",
+                "Color": "Blue",
+                "ApplicationName": "[parameters('ApplicationName_AppSetting')]"
+              }
+            },
+            {
+              "name": "connectionstrings",
+              "type": "config",
+              "apiVersion": "2015-08-01",
+              "dependsOn": [
+                "[resourceId('Microsoft.Web/sites/slots', variables('BlueGreenAppName'), 'staging')]"
+              ],
+              "tags": {
+                "displayName": "StagingConnectionStrings"
+              },
+              "properties": {
+                "DatabaseConnectionString": {
+                  "value": "staging.databases.windows.net",
+                  "type": "custom"
+                }
+              }
+            },
+            {
+              "name": "MSDeploy",
+              "type": "extensions",
+              "location": "[resourceGroup().location]",
+              "apiVersion": "2015-08-01",
+              "dependsOn": [
+                "[resourceId('Microsoft.Web/sites/slots', variables('BlueGreenAppName'), 'staging')]"
+              ],
+              "tags": {
+                "displayName": "StagingWebDeploy"
+              },
+              "properties": {
+                "packageUri": "[concat(parameters('_artifactsLocation'), '/', parameters('StagingWebDeployPackageFolder'), '/', parameters('StagingWebDeployPackageFileName'), parameters('_artifactsLocationSasToken'))]",
+                "dbType": "None",
+                "connectionString": "",
+                "setParameters": {
+                  "IIS Web Application Name": "[variables('BlueGreenAppName')]"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "appsettings",
+          "type": "config",
+          "apiVersion": "2015-08-01",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites', variables('BlueGreenAppName'))]"
+          ],
+          "tags": {
+            "displayName": "ProductionApplicationSettings"
+          },
+          "properties": {
+            "WhatIsMyEnvironment": "Production",
+            "Color": "Green",
+            "ApplicationName": "[parameters('ApplicationName_AppSetting')]"
+          }
+        },
+        {
+          "type": "config",
+          "name": "connectionstrings",
+          "apiVersion": "2015-08-01",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites', variables('BlueGreenAppName'))]"
+          ],
+          "tags": {
+            "displayName": "ProductionConnectionStrings"
+          },
+          "properties": {
+            "DatabaseConnectionString": {
+              "value": "production.databases.windows.net",
+              "type": "custom"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "outputs": {}
+}

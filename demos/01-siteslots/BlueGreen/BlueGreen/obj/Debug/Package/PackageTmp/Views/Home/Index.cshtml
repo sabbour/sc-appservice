@@ -1,0 +1,25 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron" style="background-color: @ViewBag.Color; color: white">
+    <h1>@ViewBag.WhichEnvironment - Version @ViewBag.Version</h1>
+    <p class="lead">This sample shows how you can leverage Azure Web Apps slots and Application Settings to have production and staging environments.</p>
+    <p><a href="https://docs.microsoft.com/en-us/azure/app-service-web/web-sites-staged-publishing" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+</div>
+
+<div class="row">
+    <div class="col-md-12" style="font-size: large">
+        <h2>Application settings</h2>
+        <ul>
+            <li><strong>WhatIsMyEnvironment (slot setting): </strong>@ViewBag.WhichEnvironment</li>
+            <li><strong>Color (slot setting): </strong>@ViewBag.Color</li>
+            <li><strong>ApplicationName (common setting): </strong>@ViewBag.ApplicationName</li>
+            <li><strong>Version (common setting in Web.config only): </strong>@ViewBag.Version</li>
+        </ul>
+        <h2>Connection strings</h2>
+        <ul>
+            <li><strong>Database (slot setting): </strong>@ViewBag.DatabaseConnectionString</li>
+        </ul>
+    </div>
+</div>

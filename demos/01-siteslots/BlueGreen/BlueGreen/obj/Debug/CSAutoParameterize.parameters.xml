@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <parameter name="DatabaseConnectionString-Web.config Connection String" description="DatabaseConnectionString Connection String used in web.config by the application to access the database." defaultValue="localdatabase" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="C:\\Users\\asabbour\\Documents\\Git\\sitecore-hackathon\\01-siteslots\\BlueGreen\\BlueGreen\\obj\\Debug\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='DatabaseConnectionString']/@connectionString" />
+  </parameter>
+</parameters>

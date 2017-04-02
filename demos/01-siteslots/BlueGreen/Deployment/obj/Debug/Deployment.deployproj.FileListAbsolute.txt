@@ -1,0 +1,1 @@
+C:\Users\asabbour\Documents\Git\sitecore-hackathon\01-siteslots\BlueGreen\Deployment\obj\Debug\Deployment.deployprojResolveAssemblyReference.cache
